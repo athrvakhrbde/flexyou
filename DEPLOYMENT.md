@@ -35,6 +35,14 @@ Optional for local Supabase Google only: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECR
 
 Build runs `prisma migrate deploy` then `next build` (see `vercel.json`).
 
+**One-shot CLI setup** (after `supabase login` and `vercel login`):
+
+```bash
+./scripts/setup-production.sh
+```
+
+Mumbai (`ap-south-1`) projects use the `aws-1-ap-south-1` pooler host (see `supabase/.temp/pooler-url` after `supabase link`).
+
 ## 3. Deploy
 
 ```bash
