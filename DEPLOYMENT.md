@@ -12,6 +12,14 @@
 
 ## 2. Vercel environment variables
 
+**Required before the first deploy succeeds.** Local `.env` is not uploaded (see `.vercelignore`). Add variables in the [Vercel dashboard](https://vercel.com) → Project → Settings → Environment Variables, or:
+
+```bash
+vercel env add DATABASE_URL production
+vercel env add DIRECT_URL production
+# … repeat for each variable below
+```
+
 Set these in the Vercel project (Production + Preview):
 
 | Variable | Notes |
