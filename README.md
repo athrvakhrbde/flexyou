@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FlexYou
+
+A social platform where people flex their personal collections and everyday carry items — Instagram meets a personal inventory showcase.
+
+## Tech Stack
+
+- **Frontend:** Next.js 14, TypeScript, Tailwind CSS, Framer Motion
+- **Backend:** Next.js Server Actions + Prisma ORM
+- **Database:** PostgreSQL (Supabase)
+- **Auth:** Supabase Auth (Google + Email)
+- **Storage:** Supabase Storage
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure Supabase
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Follow [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) to create your Supabase project, enable auth providers, and set up the `flex-items` storage bucket.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy environment variables:
 
-## Learn More
+```bash
+cp .env.example .env
+```
 
-To learn more about Next.js, take a look at the following resources:
+Fill in your Supabase credentials and database URLs.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Run migrations & seed
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx prisma migrate deploy   # or: npm run db:migrate
+npm run db:seed
+```
 
-## Deploy on Vercel
+### 4. Start local stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run supabase:start    # local Supabase (Docker required)
+npm run db:migrate
+npm run db:seed
+npm run dev:local         # http://localhost:3001
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For production:
+
+```bash
+npm run build
+npm run start
+```
+
+Open [http://localhost:3001](http://localhost:3001) for local dev.
+
+**Note:** Feed, profiles, and item pages are public. Sign in to react, follow, or save items.
+
+## Demo Users (after seed)
+
+| Username | Profile |
+|----------|---------|
+| arjunflex | `/u/arjunflex` |
+| priyaflex | `/u/priyaflex` |
+| rahulwatches | `/u/rahulwatches` |
+| snehaedc | `/u/snehaedc` |
+| vikramtech | `/u/vikramtech` |
+
+## Routes (this pass)
+
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page with stats & Flex of the Day |
+| `/login`, `/signup` | Auth (Google + email) |
+| `/onboarding` | Username, bio, interests setup |
+| `/feed` | Infinite scroll feed with filters |
+| `/u/[username]` | User profile with collections/items/saved |
+| `/u/[username]/[collectionSlug]` | Collection detail |
+| `/item/[itemId]` | Item detail with reactions & comments |
+| `/settings` | Settings placeholder |
+
+## Scripts
+
+```bash
+npm run dev          # Start dev server (port 3000)
+npm run dev:local    # Start dev server (port 3001)
+npm run build        # Production build
+npm run start        # Production server
+npm run supabase:start  # Local Supabase
+npm run db:migrate   # Run Prisma migrations
+npm run db:seed      # Seed demo data
+npm run setup:local  # Supabase + migrate + seed
+```
+
+## Flex Score Algorithm
+
+```
+flexScore = min(10000,
+  items × 10 +
+  totalValue / 1000 +
+  reactions × 5 +
+  followers × 8 +
+  rarityWeightedScore +
+  affiliateClicks × 3
+)
+```
+
+Rarity weights: GRAIL=100, ULTRA_RARE=50, RARE=20, UNCOMMON=5, COMMON=1

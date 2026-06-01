@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum CollectionCategory {
+  WATCHES
+  WALLETS
+  EDC
+  DAILYWEAR
+  CARS
+  SNEAKERS
+  TECH
+  JEWELRY
+  OTHER
+}
+
+enum Rarity {
+  COMMON
+  UNCOMMON
+  RARE
+  ULTRA_RARE
+  GRAIL
+}
+
+enum ReactionType {
+  FIRE
+  WANT
+  RESPECT
+  RARE
+}
+
+model User {
+  id          String   @id
+  email       String   @unique
+  username    String   @unique
+  displayName String?
+  avatar      String?
+  bio         String?
+  flexScore   Int      @default(0)
+  isPro       Boolean  @default(false)
+  location    String?
+  interests   CollectionCategory[]
+  createdAt   DateTime @default(now())
+
+  collections   Collection[]
+  flexItems     FlexItem[]
+  reactions     Reaction[]
+  comments      Comment[]
+  followers     Follow[]       @relation("Following")
+  following     Follow[]       @relation("Follower")
+  savedItems    SavedItem[]
+  affiliateClicks AffiliateClick[]
+}
+
+model Collection {
+  id          String             @id @default(cuid())
+  userId      String
+  name        String
+  slug        String
+  description String?
+  coverImage  String?
+  category    CollectionCategory
+  isPublic    Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items FlexItem[]
+
+  @@unique([userId, slug])
+  @@index([userId])
+}
+
+model FlexItem {
+  id             String   @id @default(cuid())
+  collectionId   String
+  userId         String
+  name           String
+  brand          String
+  model          String?
+  description    String?
+  images         String[]
+  estimatedValue Float
+  purchaseYear   Int?
+  affiliateLink  String?
+  tags           String[]
+  rarity         Rarity
+  createdAt      DateTime @default(now())
+
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reactions  Reaction[]
+  comments   Comment[]
+  savedBy    SavedItem[]
+  affiliateClicks AffiliateClick[]
+  imageProductTags ImageProductTag[]
+
+  @@index([userId])
+  @@index([collectionId])
+  @@index([createdAt])
+}
+
+model Reaction {
+  id         String       @id @default(cuid())
+  userId     String
+  flexItemId String
+  type       ReactionType
+  createdAt  DateTime     @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flexItem FlexItem @relation(fields: [flexItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, flexItemId])
+  @@index([flexItemId])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  userId     String
+  flexItemId String
+  text       String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flexItem FlexItem @relation(fields: [flexItemId], references: [id], onDelete: Cascade)
+
+  @@index([flexItemId])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("Following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model SavedItem {
+  id         String   @id @default(cuid())
+  userId     String
+  flexItemId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  flexItem FlexItem @relation(fields: [flexItemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, flexItemId])
+  @@index([userId])
+}
+
+model AffiliateClick {
+  id         String   @id @default(cuid())
+  userId     String?
+  flexItemId String
+  createdAt  DateTime @default(now())
+
+  user     User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  flexItem FlexItem @relation(fields: [flexItemId], references: [id], onDelete: Cascade)
+
+  @@index([flexItemId])
+}
+
+/// Tap-to-tag product marker on a flex image (Instagram-style)
+model ImageProductTag {
+  id             String   @id @default(cuid())
+  flexItemId     String
+  imageIndex     Int      @default(0)
+  /// 0–100, percent from left edge of image
+  x              Float
+  /// 0–100, percent from top edge of image
+  y              Float
+  name           String
+  brand          String?
+  estimatedValue Float?
+  createdAt      DateTime @default(now())
+
+  flexItem FlexItem @relation(fields: [flexItemId], references: [id], onDelete: Cascade)
+
+  @@index([flexItemId])
+  @@index([flexItemId, imageIndex])
+}

@@ -1,0 +1,1 @@
+-- FlexYou seed placeholder (Prisma seed handles demo data via npm run db:seed)

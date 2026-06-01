@@ -2,26 +2,153 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --ink: 0 0% 0%;
+    --background: 55 100% 96%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+    --primary: 82 95% 52%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 280 100% 88%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 55 40% 90%;
+    --muted-foreground: 0 0% 35%;
+    --accent: 330 95% 68%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 90% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 0%;
+    --input: 0 0% 0%;
+    --ring: 0 0% 0%;
+    --radius: 0.5rem;
+    --neo-lime: 82 95% 52%;
+    --neo-pink: 330 95% 68%;
+    --neo-sky: 195 95% 58%;
+    --neo-yellow: 48 100% 62%;
+    --shadow-neo-sm: 2px 2px 0 hsl(var(--ink));
+    --shadow-neo: 4px 4px 0 hsl(var(--ink));
+    --shadow-neo-lg: 6px 6px 0 hsl(var(--ink));
+    --shadow-neo-xl: 8px 8px 0 hsl(var(--ink));
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 82 95% 52%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 280 60% 35%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 330 95% 68%;
+    --accent-foreground: 0 0% 0%;
+    --border: 0 0% 98%;
+    --input: 0 0% 98%;
+    --ring: 0 0% 98%;
+    --shadow-neo-sm: 2px 2px 0 hsl(0 0% 98%);
+    --shadow-neo: 4px 4px 0 hsl(0 0% 98%);
+    --shadow-neo-lg: 6px 6px 0 hsl(0 0% 98%);
+    --shadow-neo-xl: 8px 8px 0 hsl(0 0% 98%);
+  }
+
+  * {
+    @apply border-ink;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .font-display {
+    font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* —— Neo primitives —— */
+  .neo-border {
+    @apply border-[3px] border-ink;
+  }
+
+  .neo-card {
+    @apply bg-card neo-border shadow-neo;
+  }
+
+  .neo-card-hover {
+    @apply transition-transform duration-150;
+  }
+
+  .neo-card-hover:hover {
+    @apply -translate-x-0.5 -translate-y-0.5 shadow-neo-lg;
+  }
+
+  .neo-card-hover:active {
+    @apply translate-x-0.5 translate-y-0.5 shadow-neo-sm;
+  }
+
+  .neo-btn {
+    @apply inline-flex items-center justify-center font-bold neo-border shadow-neo transition-all duration-150;
+  }
+
+  .neo-btn:hover {
+    @apply -translate-x-0.5 -translate-y-0.5 shadow-neo-lg;
+  }
+
+  .neo-btn:active {
+    @apply translate-x-0.5 translate-y-0.5 shadow-neo-sm;
+  }
+
+  .neo-btn:disabled {
+    @apply opacity-50 pointer-events-none translate-x-0 translate-y-0 shadow-neo-sm;
+  }
+
+  .neo-input {
+    @apply w-full bg-card neo-border shadow-neo-sm px-3 py-2 text-sm font-medium placeholder:text-muted-foreground focus:outline-none focus:shadow-neo focus:-translate-x-0.5 focus:-translate-y-0.5 transition-all;
+  }
+
+  .neo-chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold neo-border shadow-neo-sm bg-card transition-all;
+  }
+
+  .neo-chip:hover {
+    @apply -translate-x-px -translate-y-px shadow-neo;
+  }
+
+  .neo-chip-active {
+    @apply bg-primary text-primary-foreground shadow-neo;
+  }
+
+  .neo-heading {
+    @apply font-display font-bold tracking-tight text-foreground;
+  }
+
+  .neo-sticker {
+    @apply inline-block px-2 py-0.5 text-xs font-black uppercase tracking-wide neo-border shadow-neo-sm;
+  }
+
+  .neo-divider {
+    @apply border-t-[3px] border-ink;
+  }
+
+  .neo-page {
+    @apply mx-auto max-w-2xl px-4 py-6 pb-16;
+  }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
